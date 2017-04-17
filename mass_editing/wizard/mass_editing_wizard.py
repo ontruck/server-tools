@@ -48,7 +48,8 @@ class MassEditingWizard(models.TransientModel):
                         'type': 'selection',
                         'string': field_info[field.name]['string'],
                         'selection': [('set', 'Set'),
-                                      ('remove_m2m', 'Remove'),
+                                      ('remove_some_m2m', 'Remove'),
+                                      ('remove_m2m', 'Remove all'),
                                       ('add', 'Add')]
                     }
                     xml_group = etree.SubElement(xml_group, 'group', {
@@ -262,6 +263,15 @@ class MassEditingWizard(models.TransientModel):
                                     split_key))])
                             translation_ids.unlink()
 
+                    elif val == 'remove_some_m2m':
+                        m2m_list = []
+                        for m2m_id in vals.get(split_key, False)[0][2]:
+                            m2m_list.append((3, m2m_id, 0))
+                        values.update({split_key: m2m_list})
+                        if m2m_list:
+                            values.update({split_key: m2m_list})
+                        else:
+                            values.update({split_key: [(5, 0, [])]})
                     elif val == 'remove_m2m':
                         values.update({split_key: [(5, 0, [])]})
                     elif val == 'add':
